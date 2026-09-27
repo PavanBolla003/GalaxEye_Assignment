@@ -1,0 +1,2 @@
+model,num_classes,num_evaluation_images,total_parameters,model_size_mb,accuracy,macro_precision,macro_recall,macro_f1,weighted_precision,weighted_recall,weighted_f1,average_inference_ms,images_per_second
+BasicCNN,7,210,423175,1.6285381317138672,0.9238095238095239,0.9233675644896445,0.9238095238095239,0.9231427911193736,0.9233675644896445,0.9238095238095239,0.9231427911193734,2.993626666526931,334.04298912133703

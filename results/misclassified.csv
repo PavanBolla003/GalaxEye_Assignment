@@ -1,0 +1,17 @@
+filename,true_label,predicted_label,confidence
+tile_009.png,Forest,SeaLake,0.9338031
+tile_034.png,River,Highway,0.9883682
+tile_035.png,River,Highway,0.88072103
+tile_041.png,River,Highway,0.5575962
+tile_050.png,River,Forest,0.50757337
+tile_057.png,River,AnnualCrop,0.9434138
+tile_060.png,River,Highway,0.63627785
+tile_099.png,Industrial,Residential,0.5434938
+tile_111.png,Industrial,Highway,0.9190761
+tile_144.png,AnnualCrop,River,0.5242197
+tile_181.png,Highway,AnnualCrop,0.7324189
+tile_185.png,Highway,River,0.83854514
+tile_191.png,Highway,AnnualCrop,0.71717596
+tile_193.png,Highway,River,0.6365619
+tile_200.png,Highway,River,0.72886133
+tile_208.png,Highway,River,0.51792806
