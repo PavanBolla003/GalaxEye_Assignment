@@ -25,6 +25,7 @@ import seaborn as sns
 # CONFIG
 # ============================================================
 
+# Files and directories required to evaluate the trained model.
 EVAL_DIR = "eval_set"
 LABEL_FILE = "eval_labels.csv"
 MODEL_FILE = "models/basic_cnn.pth"
@@ -42,6 +43,7 @@ os.makedirs(RESULTS_DIR, exist_ok=True)
 # DEVICE
 # ============================================================
 
+# Run inference on GPU when available; otherwise fall back to CPU.
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 print("=" * 70)
@@ -54,6 +56,7 @@ print(device)
 # TRANSFORM
 # ============================================================
 
+# Use the same input preprocessing used during training for valid evaluation.
 transform = transforms.Compose([
     transforms.Resize((IMG_SIZE, IMG_SIZE)),
     transforms.ToTensor(),
@@ -68,6 +71,7 @@ transform = transforms.Compose([
 # CNN MODEL
 # ============================================================
 
+# Lightweight CNN used to extract tile features and classify each image.
 class BasicCNN(nn.Module):
     def __init__(self, num_classes):
         super().__init__()
@@ -109,6 +113,7 @@ class BasicCNN(nn.Module):
 # ============================================================
 
 def main():
+    # Load the saved training checkpoint and rebuild the model architecture.
     print("\n" + "=" * 70)
     print("LOADING MODEL")
     print("=" * 70)
@@ -135,6 +140,7 @@ def main():
     print(f"Trainable  : {trainable_parameters:,}")
     print(f"Model size : {model_size_mb:.2f} MB")
 
+    # Read the evaluation labels so each image can be checked against the ground truth.
     print("\n" + "=" * 70)
     print("READING EVALUATION LABELS")
     print("=" * 70)
@@ -146,6 +152,7 @@ def main():
     FILENAME_COLUMN = "filename"
     LABEL_COLUMN = "true_label"
 
+    # Create a dataset that maps each CSV row to an image file and its true label.
     class EvalDataset(Dataset):
         def __init__(self, dataframe, image_dir, transform=None):
             self.dataframe = dataframe.reset_index(drop=True)
@@ -185,6 +192,7 @@ def main():
     print("\nNumber of evaluation images:")
     print(len(eval_dataset))
 
+    # Run the model over all validation images and collect scores for each prediction.
     print("\n" + "=" * 70)
     print("RUNNING EVALUATION")
     print("=" * 70)
@@ -228,6 +236,7 @@ def main():
     recall_weighted = recall_score(all_true, all_pred, labels=classes, average="weighted", zero_division=0)
     f1_weighted = f1_score(all_true, all_pred, labels=classes, average="weighted", zero_division=0)
 
+    # Compute the main classification metrics from the model predictions.
     print("\n" + "=" * 70)
     print("MODEL PERFORMANCE")
     print("=" * 70)
@@ -239,6 +248,7 @@ def main():
     print(f"Weighted Recall    : {recall_weighted * 100:.2f}%")
     print(f"Weighted F1        : {f1_weighted * 100:.2f}%")
 
+    # Write the per-class report and confusion matrix for review.
     print("\n" + "=" * 70)
     print("PER-CLASS PERFORMANCE")
     print("=" * 70)
@@ -285,6 +295,7 @@ def main():
     average_time_ms = (total_inference_time / num_images) * 1000
     images_per_second = num_images / total_inference_time if total_inference_time > 0 else 0
 
+    # Measure average latency and throughput across the full evaluation set.
     print("\n" + "=" * 70)
     print("INFERENCE PERFORMANCE")
     print("=" * 70)

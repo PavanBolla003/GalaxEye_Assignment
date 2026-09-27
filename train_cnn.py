@@ -14,6 +14,7 @@ from tqdm import tqdm
 # CONFIG
 # ============================================================
 
+# Training settings and folder locations for the model checkpoint.
 DATA_DIR = "candidate_tiles"
 MODEL_DIR = "models"
 
@@ -32,6 +33,7 @@ os.makedirs(MODEL_DIR, exist_ok=True)
 # REPRODUCIBILITY
 # ============================================================
 
+# Keep the training run consistent across runs for easier debugging.
 random.seed(SEED)
 np.random.seed(SEED)
 torch.manual_seed(SEED)
@@ -56,6 +58,7 @@ print(device)
 # TRANSFORM
 # ============================================================
 
+# Resize and augment the tile images before feeding them into the CNN.
 train_transform = transforms.Compose([
     transforms.Resize((IMG_SIZE, IMG_SIZE)),
     transforms.RandomHorizontalFlip(),
@@ -74,6 +77,7 @@ train_transform = transforms.Compose([
 # ============================================================
 
 def main():
+    # Load the labeled image folders as a PyTorch dataset.
     dataset = datasets.ImageFolder(
         root=DATA_DIR,
         transform=train_transform,
@@ -93,6 +97,7 @@ def main():
     # ============================================================
     # DATALOADER
     # ============================================================
+    # Batch the images so the model can train efficiently on GPU/CPU.
     train_loader = DataLoader(
         dataset,
         batch_size=BATCH_SIZE,
@@ -104,6 +109,8 @@ def main():
     # ============================================================
     # CNN
     # ============================================================
+    # A lightweight CNN that learns spatial patterns in each tile image
+    # and predicts the correct class label for the satellite data.
     class BasicCNN(nn.Module):
         def __init__(self, num_classes):
             super().__init__()
@@ -146,10 +153,12 @@ def main():
     print("=" * 70)
     print(model)
 
+    # Define the loss and optimization settings used during training.
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
 
+    # Train the model for a few epochs and print the loss/accuracy progress.
     for epoch in range(NUM_EPOCHS):
         model.train()
         running_loss = 0.0
@@ -182,6 +191,7 @@ def main():
         print(f"LR       : {optimizer.param_groups[0]['lr']:.6f}")
         scheduler.step()
 
+    # Save the trained weights and label mapping for later evaluation.
     model_path = os.path.join(MODEL_DIR, "basic_cnn.pth")
     torch.save(
         {
